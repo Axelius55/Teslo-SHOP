@@ -3,16 +3,22 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProductImage } from './product-image.entity';
+import { User } from 'src/auth/entities/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'products'})
 export class Product {
+
+  @ApiProperty({example: "baf600f5-47b5-472f-a20d-316d6d7d1b11", description: "Product UUID", uniqueItems: true})
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiProperty({example: "t-shirt", description: "title"})
   @Column('text', {
     unique: true,
   })
@@ -58,6 +64,10 @@ export class Product {
     eager: true,
   })
   images?: ProductImage[];
+
+  @ManyToOne(() => User, (user) => user.product, { eager: true })
+  user: User;
+
 
   @BeforeInsert()
   checkSlugInsert() {
